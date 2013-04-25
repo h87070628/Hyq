@@ -4,7 +4,6 @@
 db_index=0;
 end_index=99;
 
-for db_index=0,end_index,1 do
 
 --print(string.format([[	CREATE TABLE IF NOT EXISTS test.t_sys_arg_%02d(
 --				type   INT UNSIGNED NOT NULL DEFAULT '0',
@@ -13,7 +12,7 @@ for db_index=0,end_index,1 do
 --				) ENGINE=innodb, CHARSET=utf8;]],db_index));
 --
 
-end
+--end
 
 --print(string.format([[
 --USE test;
@@ -39,12 +38,17 @@ end
 
 print(string.format([[
 USE TASK_DAY_DB;
+]]));
 
-DROP TABLE player_status;
-
-CREATE TABLE IF NOT EXISTS `player_status` (
+for db_index=0,end_index,1 do
+print(string.format([[
+CREATE TABLE IF NOT EXISTS `player_status_%02d` (
 	userid INT UNSIGNED NOT NULL,
 	status BINARY(250) NOT NULL DEFAULT '\0',
+	char_buf BINARY(250) NOT NULL DEFAULT '\0',
 	PRIMARY KEY (userid)
 	)ENGINE=InnoDB DEFAULT CHARSET=utf8;
-]]));
+]],db_index));
+end
+--status 字节字符串,能按位设置值.
+--char_buf 字符字符串,只能按字符设置值,范围为(0-255).
