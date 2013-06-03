@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>CSS Dock Menu</title>
+<script type="text/javascript" src="../js/jquery.js"></script>
+<script type="text/javascript" src="../js/interface.js"></script>
+<link href="../style.css" rel="stylesheet" type="text/css" />
+
+<script type="text/javascript">
+	<!--页面初始化时,执行的脚本.-->
+	$(document).ready(
+				function()
+				{
+				<!--导航条的初始化.-->
+				$('#dock').Fisheye(
+					{
+						maxWidth: 50,
+						items: 'a',
+						itemsText: 'span',
+						container: '.dock-container',
+						itemWidth: 40,
+						proximity: 40,
+						halign : 'center'
+					});
+				}
+			);
+	function submit()
+	{
+		<!--单击提交按钮,上传文字到后台服务器.-->
+		var message_submit = document.getElementById("message_board_str");
+		alert(message_submit.value);
+		//错误验证.
+		
+		//创建json对象.
+		var xmlhttp;
+		if(window.XMLHttpRequest){
+				xmlhttp = new XMLHttpRequest();
+			}
+			else{
+				xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+			}
+		xmlhttp.open("POST","../php/message_board.php",true);
+		xmlhttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+		var param = "userName="+"121"+"&psw="+"232";
+		xmlhttp.send(param);
+
+		xmlhttp.onreadystatechange=function()
+		{
+			if(xmlhttp.readyState==4 && xmlhttp.status==200){
+				var json_obj = eval("("+xmlhttp.responseText+")");	//将从php传送过来的json对象转换成javascript对象.
+				if(json_obj.t_date == undefined)	//对象没有返回,登陆失败..
+				{
+					alert("2222");
+				}
+				else
+				{
+					alert(json_obj.t_date);
+				}
+			}
+		}
+	};
+</script>
+</head>
+
+<body>
+<div class="dock" id="dock">
+	<div class="dock-container">
+		<a class="dock-item" href="../index.html" onclick="x++;if(x>9){x=1;}document.getElementById('im_0').src='./apple/'+x.toString()+'.png'; return false;"><img src="../images/home.png" alt="home" /><span>Home</span></a> 
+
+		<a class="dock-item" href="#"><img src="../images/email.png" alt="contact" /><span>Contact</span></a> 
+		<a class="dock-item" href="#"><img src="../images/portfolio.png" alt="portfolio" /><span>Portfolio</span></a> 
+		<a class="dock-item" href="#"><img src="../images/music.png" alt="music" /><span>Music</span></a> 
+		<a class="dock-item" href="#"><img src="../images/video.png" alt="video" /><span>Video</span></a> 
+		<a class="dock-item" href="#"><img src="../images/history.png" alt="history" /><span>History</span></a> 
+		<a class="dock-item" href="#"><img src="../images/calendar.png" alt="calendar" /><span>Calendar</span></a> 
+		<a class="dock-item" href="#"><img src="../images/link.png" alt="rss" /><span>RSS</span></a>
+		<a class="dock-item" href="#"><img src="../images/rss.png" alt="rss" /><span>RSS</span></a> 
+		<a class="dock-item" href="#"><img src="../images/rss2.png" alt="rss" /><span>RSS2</span></a>
+	</div> 
+</div>
+
+<div id="blog_body">
+	<p id="p_reply"></p>
+
+	<script type="text/javascript">
+		var message_board = new Array();
+		
+		message_board[0] = new Object();
+		message_board[0].user = "anna";
+		message_board[0].time = "2013-06-02 17:00";
+		message_board[0].message = "来自江西,艾拉不油."
+		
+		message_board[1] = new Object();
+		message_board[1].user = "Jerry";
+		message_board[1].time = "2013-06-02 17:03";
+		message_board[1].message = "Think you!!!";
+		
+		window.document.getElementById("p_reply").innerHTML = message_board[0].user + "&nbsp&nbsp&nbsp&nbsp" + message_board[0].time + "</br>" + message_board[0].message + "<hr width=100% height=1>";
+
+		var para = document.createElement("p");
+		para.innerHTML = message_board[1].user + "&nbsp&nbsp&nbsp&nbsp" + message_board[1].time + "</br>" + message_board[1].message;
+		var last_node = document.getElementById("p_reply").appendChild(para);
+	</script>
+	<hr width=100% height=1>
+	<button onclick="submit()">提交</button>
+</div>
+	<p style="text-align: center; margin: -50px auto;">
+	<textarea id="message_board_str" rows="10" cols="30">111111</textarea>
+	</p>
+</body>
+
+</html>
