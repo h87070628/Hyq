@@ -9,8 +9,9 @@
 
 print(string.format([[
 USE MyBlog;
+drop table comment;
 CREATE TABLE IF NOT EXISTS `comment` (
-	comment_id INT UNSIGNED NOT NULL,
+	comment_id INT UNSIGNED NOT NULL auto_increment,
 	page_index INT UNSIGNED NOT NULL,
 	comment_str varchar(255) NOT NULL,
 	createtime DATETIME NOT NULL,

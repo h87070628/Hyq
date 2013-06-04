@@ -2,11 +2,20 @@
 	error_reporting(E_ALL);	//打开所有的错误日志.
 	require './connect_mysql.php';
 
-	error_log($_POST["index"]."][".$_POST["user"]."][".$_POST["comment"]);
+	//var param = "page_index="+page_index+"&comment_str="+comment_str+"&userid="+userid;
+	//($_POST["page_index"]."][".$_POST["comment_str"]."][".$_POST["userid"]);
 	
+	$page_index = $_POST["page_index"];
+	$comment_str = $_POST["comment_str"];
+	$userid = $_POST["userid"];
+	
+	error_log("insert into comment values(NULL,$page_index,'$comment_str',NOW(),$userid);");
+
 	//写入数据库.
-	connect_sql();
-	$sql_data = query_sql("show databases;");
+	$temp_t = connect_sql();
+	error_log($temp_t);
+	$sql_data = query_sql("insert into comment values(NULL,$page_index,'$comment_str',NOW(),$userid);");
+	error_log($sql_data);
  	close_sql();
 
 	//返回插入的评论.

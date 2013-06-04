@@ -81,7 +81,7 @@ var islogin=false;
 
 	<div class="panel" style="margin:-38px auto;">
 	<form id="dreamduform" action="dreamdu.php" method="post">
-        	<textarea style="resize: none; width:785px; height:100px;margin:0px auto;"  cols="10" rows="10" id="contactus" name="contactus"></textarea>
+        	<textarea id="comment_txt" style="resize: none; width:785px; height:100px;margin:0px auto;"  cols="10" rows="10" id="contactus" name="contactus"></textarea>
 		<p id="sure_id" style="padding:5px; text-align:center; background:#e0eeee; border:solid 1px #c3c3c3; width:60px; text-align:center; margin:1px 0px auto;" onmouseover="this.style.background='#A4D3EE'" onmouseout="this.style.background='#e0eeee'" onclick="onclick_sure()">提交</p>
 		<p id="cancel" style="padding:5px; text-align:center; background:#e0eeee; border:solid 1px #c3c3c3; width:60px; text-align:center; margin:-26px 80px auto;" onmouseover="this.style.background='#A4D3EE'" onmouseout="this.style.background='#e0eeee'" onclick="onclick_cancel()">取消</p>
 	</form>
@@ -161,7 +161,22 @@ halign : 'center'
 		//index=1,所在页面的索引,1.html为1,2.html为2依此类推.
 		//user=用户名,谁提交的用户,可以匿名提交.
 		//comment=评论的正文.字数及内容由前端进行验证.
-		var param = "index="+"1"+"&user="+"andyhuang"+"&comment="+"111111112222222";
+
+		//$page_index = 1;                                               
+		//$comment_str = "www.baidu.com";                                
+		//$userid = 50002;
+
+		var page_index = (getFileName().slice(0,-5));	//获得1.html中的1
+		var comment_str = (window.document.getElementById("comment_txt").value) ;
+		if(comment_str.length == 0)
+		{
+			alert("您必须输入一段评论才能提交成功.");
+			return false;		//中断脚本的执行.
+		}
+		var userid = 50010;	//需要使用cooking保存这个值.
+
+		//var param = "index="+"1"+"&user="+"andyhuang"+"&comment="+"111111112222222";
+		var param = "page_index="+page_index+"&comment_str="+comment_str+"&userid="+userid;
 		xmlhttp.send(param);  
 
 		xmlhttp.onreadystatechange=function()
@@ -189,6 +204,17 @@ halign : 'center'
 		{
 			alert("单击了取消按钮.");
 		}
+
+	// 获取当前文件名
+	function getFileName(){
+		var url = this.location.href
+			var pos = url.lastIndexOf("/");
+		if(pos == -1){
+			pos = url.lastIndexOf("\\")
+		}
+		var filename = url.substr(pos +1)
+			return filename;
+	}
 </script>
 
 </body>

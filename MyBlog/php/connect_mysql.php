@@ -29,7 +29,9 @@ function query_sql($sql_str)
 	global $con;
 
 	$result = mysql_query($sql_str,$con);			//执行Sql语句.
+	#$result = mysql_query("insert into comment values(NULL,1,'www.google.com',NOW(),50003);",$con);			//执行Sql语句.
 	if($result == FALSE){
+		error_log(mysql_error());
 		return FALSE;
 	}
 	else{
