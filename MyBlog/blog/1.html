@@ -117,7 +117,6 @@ halign : 'center'
 	var reply_array = new Array();
 
 	reply_array[0] = new Object();
-
 	reply_array[0].user = user;
 	reply_array[0].reply_date = reply_date;	
 	reply_array[0].reply_str = reply_str;
@@ -145,57 +144,50 @@ halign : 'center'
 
 	function onclick_sure()
 	{
-	alert("111111121");
-	
-	var xmlhttp;
-	if(window.XMLHttpRequest)
-	{
-		xmlhttp = new XMLHttpRequest();
-	}
-	else
-	{
-		xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-	}
-	//创建ajax对象.
-
-	xmlhttp.onreadystatechange=function()
-	{
-		if(xmlhttp.readyState==4 && xmlhttp.status==200)
+		var xmlhttp;
+		//创建ajax对象.
+		if(window.XMLHttpRequest)
 		{
-			var json_obj = eval("("+xmlhttp.responseText+")");	//将从php传送过来的json对象转换成javascript对象.
+			xmlhttp = new XMLHttpRequest();
+		}
+		else
+		{
+			xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+		}
 
-			if(json_obj.t_date == undefined)	//对象没有返回,登陆失败..
+		xmlhttp.open("POST","../php/comment.php",true);
+		xmlhttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");  
+
+		//index=1,所在页面的索引,1.html为1,2.html为2依此类推.
+		//user=用户名,谁提交的用户,可以匿名提交.
+		//comment=评论的正文.字数及内容由前端进行验证.
+		var param = "index="+"1"+"&user="+"andyhuang"+"&comment="+"111111112222222";
+		xmlhttp.send(param);  
+
+		xmlhttp.onreadystatechange=function()
+		{
+			if(xmlhttp.readyState==4 && xmlhttp.status==200)
 			{
-				alert("register error!!!");
-			}
-			else
-			{
-	   		//document.getElementById("login_mod").innerHTML=json_obj.t_date;		//使用json对象.
-	   		//document.getElementById("login_mod").onclick="";
-	   			alert("register success!");
+				var json_obj = eval("("+xmlhttp.responseText+")");	//将从php传送过来的json对象转换成javascript对象.
+
+				if(json_obj.t_date == undefined)	//对象没有返回,登陆失败..
+				{
+					alert("register error!!!");
+				}
+				else
+				{
+				//document.getElementById("login_mod").innerHTML=json_obj.t_date;		//使用json对象.
+				//document.getElementById("login_mod").onclick="";
+					alert("register success!");
+				}
 			}
 		}
-	}
-
-	//index=1,所在页面的索引,1.html为1,2.html为2依此类推.
-	//user=用户名,谁提交的用户,可以匿名提交.
-	//comment=评论的正文.字数及内容由前端进行验证.
-
-	xmlhttp.open("POST","../php/comment.php",true);
-
-        xmlhttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");  
-
-	var param = "index="+"1"+"&user="+"andyhuang"+"&comment="+"111111112222222";
-        xmlhttp.send(param);  
-	//xmlhttp.send();
-
-	alert("111111131");
 
 	}
 
 	function onclick_cancel()
 		{
-			alert("333333343");
+			alert("单击了取消按钮.");
 		}
 </script>
 
