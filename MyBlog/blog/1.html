@@ -191,9 +191,12 @@ halign : 'center'
 				}
 				else
 				{
-				//document.getElementById("login_mod").innerHTML=json_obj.t_date;		//使用json对象.
-				//document.getElementById("login_mod").onclick="";
-					alert("register success!");
+					//document.getElementById("login_mod").innerHTML=json_obj.t_date;		//使用json对象.
+					//document.getElementById("login_mod").onclick="";
+
+					window.document.getElementById("comment_txt").value = "";
+					alert("评论成功!");
+					$(".panel").slideToggle("slow");
 				}
 			}
 		}
@@ -202,7 +205,8 @@ halign : 'center'
 
 	function onclick_cancel()
 		{
-			alert("单击了取消按钮.");
+			window.document.getElementById("comment_txt").value = "";
+			$(".panel").slideToggle("slow");
 		}
 
 	// 获取当前文件名
