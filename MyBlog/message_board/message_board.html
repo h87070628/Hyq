@@ -25,12 +25,19 @@
 					});
 				}
 			);
+
 	function submit()
 	{
 		<!--单击提交按钮,上传文字到后台服务器.-->
 		var message_submit = document.getElementById("message_board_str");
-		alert(message_submit.value);
+
 		//错误验证.
+		if(message_submit.value.length<=0)
+		{
+			alert("不能提交空内容.");
+			return false;
+		}
+		
 		
 		//创建json对象.
 		var xmlhttp;
@@ -42,7 +49,7 @@
 			}
 		xmlhttp.open("POST","../php/message_board.php",true);
 		xmlhttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
-		var param = "userName="+"121"+"&psw="+"232";
+		var param = "userName="+"Null"+"&psw="+ message_submit.value;
 		xmlhttp.send(param);
 
 		xmlhttp.onreadystatechange=function()
@@ -106,7 +113,7 @@
 	<button onclick="submit()">提交</button>
 </div>
 	<p style="text-align: center; margin: -50px auto;">
-	<textarea id="message_board_str" rows="10" cols="30">111111</textarea>
+		<textarea id="message_board_str" style="resize: none; width:793px; height:100px;margin:0px auto;" rows="10" cols="30"></textarea>
 	</p>
 </body>
 
