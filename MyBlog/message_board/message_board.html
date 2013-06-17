@@ -49,21 +49,37 @@
 			}
 		xmlhttp.open("POST","../php/message_board.php",true);
 		xmlhttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
-		var param = "userName="+"Null"+"&psw="+ message_submit.value;
+		var param = "userName="+"Null"+"&message_str="+ message_submit.value;
 		xmlhttp.send(param);
 
 		xmlhttp.onreadystatechange=function()
 		{
 			if(xmlhttp.readyState==4 && xmlhttp.status==200){
 				var json_obj = eval("("+xmlhttp.responseText+")");	//将从php传送过来的json对象转换成javascript对象.
-				if(json_obj.t_date == undefined)	//对象没有返回,登陆失败..
+
+				if(json_obj.t_date == undefined)	//后台成功返回,留言成功..
 				{
-					alert("2222");
+					alert("很抱歉,留言失败.");
 				}
 				else
 				{
-					alert(json_obj.t_date);
+					alert("恭喜你,留言成功.");
+					document.getElementById("message_board_str").value = "";
 				}
+
+				/*
+				if(json_obj.r1 == undefined)	
+				{
+					alert("很抱歉,留言失败.");
+				}
+				else
+				{
+					//alert("恭喜你,留言成功.");
+					alert(json_obj.r1+json_obj.r2+json_obj.r3+json_obj.r4);
+					document.getElementById("message_board_str").value = json_obj.r3 + "][" + json_obj.r3;
+				}
+				*/
+
 			}
 		}
 	};
