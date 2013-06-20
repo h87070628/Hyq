@@ -8,6 +8,48 @@
 <link href="../style.css" rel="stylesheet" type="text/css" />
 
 <script type="text/javascript">
+//定义一些全局变量.
+</script>
+
+<script type="text/javascript">
+	function get_message()
+	{
+		<!--获得留言数据.-->
+		//alert("获得留言数据.");
+
+		//创建json对象.
+		var xmlhttp;
+		if(window.XMLHttpRequest){
+			xmlhttp = new XMLHttpRequest();
+		}else{
+			xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+		}
+		
+		//构造json对象的参数,并发送json数据.
+		xmlhttp.open("POST","../php/message_board.php",true);
+		xmlhttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+		var param = "index_begin="+"0";
+		xmlhttp.send(param);
+
+		//回调函数,接收json对象的返回.
+		xmlhttp.onreadystatechange=function()
+		{
+			if(xmlhttp.readyState==4 && xmlhttp.status==200){
+				var json_obj = eval("("+xmlhttp.responseText+")");	//将从php传送过来的json对象转换成javascript对象.
+
+				if(json_obj.t_date == undefined)	//后台成功返回,留言成功..
+				{
+					alert("很抱歉,留言失败.");
+				}
+				else
+				{
+					alert("恭喜你,留言成功.");
+					document.getElementById("message_board_str").value = "";
+				}
+			}
+		}
+	};
+
 	<!--页面初始化时,执行的脚本.-->
 	$(document).ready(
 				function()
@@ -23,6 +65,10 @@
 						proximity: 40,
 						halign : 'center'
 					});
+				<!--初始化留言板.-->
+				//	
+				get_message();
+				//
 				}
 			);
 
