@@ -15,10 +15,9 @@ error_log("xxx".$u."yyy".$str);
 $temp_t = connect_sql();
 error_log($temp_t);
 
-$sql_data = query_sql("insert into message_board values(NULL,10000,'$str',NOW());");
+//$sql_data = query_sql("insert into message_board values(NULL,10000,'$str',NOW());");
 //error_log($sql_data);
 
-/*
 $result = query_sql("select * from message_board;",$con);                      //执行Sql语句.
                 if(mysql_num_rows($result)>=1)
                 {
@@ -30,7 +29,6 @@ $result = query_sql("select * from message_board;",$con);                      /
                         mysql_free_result($result);                     //释放结果集.
                         $response=$json_string;                         //返回json对象.
                 }
-*/
 
 close_sql();
 
