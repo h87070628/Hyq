@@ -26,7 +26,7 @@
 		}
 		
 		//构造json对象的参数,并发送json数据.
-		xmlhttp.open("POST","../php/message_board.php",true);
+		xmlhttp.open("POST","../php/get_message.php",true);
 		xmlhttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
 		var param = "index_begin="+"0";
 		xmlhttp.send(param);
@@ -37,14 +37,27 @@
 			if(xmlhttp.readyState==4 && xmlhttp.status==200){
 				var json_obj = eval("("+xmlhttp.responseText+")");	//将从php传送过来的json对象转换成javascript对象.
 
-				if(json_obj.t_date == undefined)	//后台成功返回,留言成功..
+				if(json_obj[0].a1 == undefined)	//后台成功返回,留言成功..
 				{
-					alert("很抱歉,留言失败.");
+					alert("很抱歉,留言加载失败.");
 				}
 				else
 				{
-					alert("恭喜你,留言成功.");
-					document.getElementById("message_board_str").value = "";
+					//alert("恭喜你,留言加载成功.");
+					//document.getElementById("message_board_str").value = "";
+					window.document.getElementById("p_reply").innerHTML = json_obj[0].a2 + "&nbsp&nbsp&nbsp&nbsp" + json_obj[0].a4 + "</br>" + json_obj[0].a3 + "<hr width=100% height=1>";
+					for(i = 1; i < 10; i++)
+					{
+						if(json_obj[i].a1 != undefined)
+						{
+							var para = document.createElement("p");
+							para.innerHTML = json_obj[i].a2 + "&nbsp&nbsp&nbsp&nbsp" + json_obj[i].a4 + "</br>" + json_obj[i].a3 + "<hr width=100% height=1>";
+							var last_node = document.getElementById("p_reply").appendChild(para);
+						}else{
+							break;
+						}
+					}
+
 				}
 			}
 		}
@@ -111,6 +124,7 @@
 				{
 					alert("恭喜你,留言成功.");
 					document.getElementById("message_board_str").value = "";
+					get_message();	//刷新留言列表.
 				}
 
 				/*
@@ -153,6 +167,7 @@
 	<p id="p_reply"></p>
 
 	<script type="text/javascript">
+		/*
 		var message_board = new Array();
 		
 		message_board[0] = new Object();
@@ -170,6 +185,8 @@
 		var para = document.createElement("p");
 		para.innerHTML = message_board[1].user + "&nbsp&nbsp&nbsp&nbsp" + message_board[1].time + "</br>" + message_board[1].message;
 		var last_node = document.getElementById("p_reply").appendChild(para);
+		*/
+
 	</script>
 	<hr width=100% height=1>
 	<button onclick="submit()">提交</button>
