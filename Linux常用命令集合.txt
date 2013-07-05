@@ -1,0 +1,284 @@
+epoll
+
+远程传送命令:
+scp -P 22222 backup.tar.gz root@192.168.1.21:/tmp/
+
+解包:
+tar xvf FileName
+打包:
+tar cvf FileName.tar DirName
+
+删除目录:
+rm -rf 目录名字    -r递归,-f强制删除,不提示
+
+查看系统进程:
+ps -xu 
+
+改变所有文件的读取权限.
+chmod 0755 * -R
+
+杀进程:
+kill -9 进程号/进程名
+
+复制文件夹:
+cp -rf filename1 filename2
+
+Vim命令:
+:1,$s/str1/str2/g 用字符串 str2 替换正文中所有出现的字符串 str1
+
+查找文件:
+locate libgd.so.2
+
+登陆到其他服务器:
+rlogin [-8EL][-e <脱离字符>][-l <用户名称>][主机名称或IP地址]
+
+要高亮的话,则设置
+:set hlsearch
+要去掉高亮,则
+:set nohlsearch
+
+查看服务器版本:
+lsb_release -a
+
+上传下载命令:
+sz
+rz
+
+
+MySql步骤或方法:
+RedHat Linux (Fedora Core/Cent OS)
+
+1.启动：/etc/init.d/mysqld start
+
+2.停止：/etc/init.d/mysqld stop
+
+3.重启：/etc/init.d/mysqld restart
+
+Debian / Ubuntu Linux
+
+1.启动：/etc/init.d/mysql start
+
+2.停止：/etc/init.d/mysql stop
+
+3.重启：/etc/init.d/mysql restart
+
+查看服务器版本:
+lsb_release -a
+
+查看表的结构:
+http://10.1.1.5/mole_sql.html
+
+Online服务器架构:
+http://blog.csdn.net/dog250/article/details/5302934
+
+旧版本的DB备份
+http://10.1.1.6/oldsvn/project/mole/server/dbsvr/tags/dbsvr_ex_20090424
+
+查询SVN列表:
+Old: svn list http://10.1.1.6/home/project/mole/server/online/tags
+New: svn list http://svn.taomee.com/mole/server/online/tags
+
+获得最新版本:
+svn co http://10.1.1.6/home/project/mole/server/online/tags/20090424/
+
+开启多个MySql端口以后使用-S运行脚本,插入数据: 
+
+cat $tmp_file | mysql -u $user --password="$password" -h $host "USER_$dbx"  -S  /root/mysql3307/mysqld.sock
+
+方法2： set follow-fork-mode child + main断点
+当设置set follow-fork-mode child，gdb将在fork之后直接执行子进程，知道碰到断点后停止。
+如何设置子进程的断点呢？在父进程中是无法知道子进程的地址空间的(只有等程序载入后方可知)。
+Gdb提供一个很方便的机制：main函数的断点将被子进程继承(毕竟main是任何程序的入口)。
+
+注意：程序在main停下后，可尝试设置断点。断点是否有效，取决于gdb是否已经载入目标程序的地址空间。
+
+如：ln -s 目录路径 快捷方式 
+
+更改本地svn目录:
+
+svn sw --relocate 旧地址 新地址
+旧地址：http://10.1.1.6/home/project/mole/server/
+新地址：http://svn.taomee.com/mole/server/
+
+-S  /root/mysql3307/mysqld.sock
+
+svn log  http://10.1.1.6/home/project/mole/server/dbsvr/trunk
+
+svn co http://svn.taomee.com/mole/server/online/trunk -r 6066
+
+删除目录下所有子目录的特定文件:
+find . -type d -name ".svn" | xargs rm -rf
+
+用 \cp 执行cp命令时不走alias#\cp a /test/a
+
+15、 恢复本地修改
+svn revert : 恢复原始未改变的工作副本文件 (恢复大部份的本地修改)。revert:
+
+[13:20:15] 0 [05895][Cmsgboard.cpp][33]Cmsgboard: MSGBOARD get shm err
+MSGBOARD_KEY            51289
+_____________________
+遇到这个报错,修改一下MSGBOARD_KEY.
+
+vimdiff用zr就可以
+    zf   创建折叠（使用数字表示创建有当前行到下多少行的折叠，比如3j就创建包括4行的折叠）
+    zo   打开折叠(l也可以打开折叠）
+    zc   关闭当前折叠
+    zm   关闭所有折叠
+    zr   打开所有折叠
+    zE   删除所有折叠
+    zd   删除当前折叠
+    za   若当前打开则关闭，若当前关闭则打开
+    zj   到下一折叠的开始处
+    zk   到上一折叠的末尾
+
+Gvim不生成临时文件
+set nobackup
+set nowritebackup
+set noswapfile
+
+/sbin/ifconfig
+
+在Vim中多窗口编辑:
+sp: FileName
+
+编辑多个文件:
+:n  编辑下一个文件. 
+:N  编辑上一个文件. 
+:files 列出目前这个Vim的打开的所有文件.
+
+一次性创建完整目录:
+mkdir -p /root/taomee/game/login
+
+摩尔庄园数据结构:
+http://10.1.1.5/mole_sql.html
+
+登陆到其他服务器执行命令:
+#!/bin/bash
+sshpass -p 'andyhuang' ssh andyhuang@10.1.1.23 "cd ~/Temp;./Main;./sh01.sh;./sh02.sh"
+exit 0
+
+查找邮件:
+select * from EMAIL_SYS_2.t_user_email_3 where userid=5013832  and type = 1000086;
+
+进入摩尔庄园外网测试服后台:
+C23 -> C7 -> C27 -> C111
+
+旧版DB服务器的版本:
+svn log http://svn.taomee.com/oldsvn/project/mole/server/dbsvr/trunk
+
+给版本打上Tags
+svn copy http://svn.taomee.com/overseas/server/mole/online/trunk http://svn.taomee.com/overseas/server/mole/online/tags/20090424 -m "released"
+
+给DB版本打上Tags
+svn copy http://svn.taomee.com/overseas/server/mole/DB/trunk http://svn.taomee.com/overseas/server/mole/DB/tags/20090501 -m "released"
+
+查看进程ID为5040的二进制文件所在位置:
+ls -l /proc/5040/exe
+
+连接.7账号密码: HuangYongQiang_yq
+外网地址: 114.80.98.16 taomee_mole
+
+使用vim作为默认的编辑器.
+export EDITOR=vim
+
+51服务器的最高权限.
+账号: root
+密码: ta0mee79
+
+40服务器的最高权限.
+账号: root
+密码: ta0mee@40
+
+越南打开输入输出日志:
+proto.c:3074:   //---Andy---DEBUG_LOG( "CI[%u][%u][%d][%s] ", pkg.id, pkg.cmd,
+map.c:741:      //---Andy---DEBUG_LOG( "CO[%u][%u][ret=%d][%d][%s] ", p->id, ntohl(proto->cmd)  
+
+18407  * @brief 充值VIP礼包、邮件
+18408  * @param vip_level: VIP用户本次包月次数
+18409  */
+18410 int Croute_func::user_vip_send_gift(userid_t userid,uint32_t vip_level )
+
+查看svn某个版本修改内容
+svn log -r 8 -v
+
+查看版本库中以前的版本:
+svn update -r 200 test.php(将版本库中的文件test.php还原到版本200) 
+
+复制黏贴代码格式不错乱的方法.
+1. paste 模式
+运行如下命令，进入 paste 模式：
+:set paste进入 paste 模式后，按 i 键进入插入模式，然后再粘帖，文本格式不会错乱了。但粘帖后还需要按 <ESC> 进入普通模式并执行如下命令结束 paste 模式：
+:set nopaste
+
+主登陆模块:
+/usr/include/libtaomee++/project/main_login
+
+内网测试账号注册:
+test.account.61.com
+
+编译：gcc mysql.c -o mysql -I/usr/include/mysql -L/usr/lib/mysql -lmysqlclient
+
+连接到SeerDB开发服务器:
+alias c31=' sshpass -p"seerinter" ssh -2  -o "StrictHostKeyChecking no" -p22000 -l"shinehoo" 10.1.1.31'
+
+连接到Seer_Online开发服务器:
+alias c82=' sshpass -p"seerinter" ssh -2  -o "StrictHostKeyChecking no" -p22000 -l"inter" 10.1.1.82'
+
+塞尔号Login服务器,send_to_user所在,需要打印输出给客户端的消息时可以在这里增加代码:
+/usr/include/libtaomee++/project/main_login
+cli_proto.hpp :232
+inline int CliProto1::send_to(fdsession_t* sess) 函数.
+
+查找字符串排除部分文件:
+grep "0x020" * -rn --exclude "*.svn-base"
+
+运营统计平台协议查看:
+http://192.168.71.57/stat-admin/index.php/admin/login
+stat stat@pwd
+
+mysql开启多个服务并开启远程连接:
+socket          = /root/mysql3308/mysqld.sock
+mysql -uroot -pta0mee -S /root/mysql3308/mysqld.sock
+mysql -uroot -pta0mee -h10.1.1.51 -P3308
+
+远程登录mysql一些常用的代码段，大家可参考一下。
+一、允许root用户在任何地方进行远程登录，并具有所有库任何操作权限，具体操作如下： 
+在本机先使用root用户登录mysql： 
+mysql -u root -p"youpassword" 
+进行授权操作： 
+mysql>GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'youpassword' WITH GRANT OPTION; 
+重载授权表： 
+FLUSH PRIVILEGES; 
+退出mysql数据库： 
+exit 
+
+将打开的文件按行传递给whois命令
+cat 02Feb | xargs -n 1 whois > next
+
+赛尔删米币道具：
+delete from seer_product_mgr_db.mb_product_id_map_table where id = xxxxxx;
+delete from seer_product_mgr_db.mb_product_info_table where id = xxxxxx;
+赛尔删金豆道具：
+delete from seer_product_mgr_db.bean_product_id_map_table where id = xxxxxx;
+delete from seer_product_mgr_db.bean_product_info_table where id = xxxxxx;
+
+yum命令的使用:
+http://blog.cnr.cn/18/viewspace-8099.html
+
+淘米开发库:
+http://dev.taomee.com/index.php/
+
+替换多个文件中的字段:
+sed -i 's/password=\"root\"/password=\"ta0mee\"/g' *.sh
+
+在子文件夹中查找字段:
+find . -name '*.conf' -print0 | xargs -0 grep -i '175\.45\.5\.231'
+
+在子文件夹中替换字段:
+find . -name '*.conf' -print0 | xargs -0 sed -i 's/175\.45\.5\.231/103\.6\.152\.15/g'
+
+git 提交文件方式:
+git add
+git commit
+git push
+
