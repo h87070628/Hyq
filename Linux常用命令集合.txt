@@ -285,3 +285,6 @@ git push
 
 查找指定版本svn日志:
 svn log -v http://svn.taomee.com/gongfupai/server -r25050:26011 | grep "M \/" > 1.log
+
+h87070628
+h19870628123
