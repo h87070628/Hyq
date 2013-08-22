@@ -136,3 +136,6 @@ http://developer.ubuntu.com/api/ubuntu-12.04/c/Unity-5.0.html
 
 Redis内存数据库使用教程:
 http://www.it168.com/redian/redis2/
+
+部署Redis服务:
+http://snowolf.iteye.com/blog/1630697
