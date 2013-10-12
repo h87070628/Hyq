@@ -271,6 +271,7 @@ http://dev.taomee.com/index.php/
 替换多个文件中的字段:
 sed -i 's/user=\"game\"/user=\"root\"/g' *.sh
 sed -i 's/password=\"rpdla1OK\!\@\"/password=\"ta0mee\"/g' *.sh
+sed -i 's/password=\"root\"/password=\"ta0mee\"/g' *.sh
 
 在子文件夹中查找字段:
 find . -name '*.conf' -print0 | xargs -0 grep -i '175\.45\.5\.231'
