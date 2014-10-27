@@ -9,7 +9,7 @@ H19870628
 http://www.haodf.com/wenda/chenshibo_988467413.htm
 
 git
-h19870628123
+h19870628
 
 
 中国上古帝王:
@@ -20,3 +20,12 @@ http://www.tianyabook.com/shanhaijing/
 
 衣服:
 http://detail.tmall.com/item.htm?spm=a230r.1.14.188.oICcC5&id=18473045685
+
+Git常用命令:
+http://justcoding.iteye.com/blog/1830388
+
+Git版本管理系统详解:
+http://www.open-open.com/lib/search?q=Git%CF%EA%BD%E2&od=0
+
+Git版本管理详解(一):
+http://www.open-open.com/lib/view/open1328069609436.html
