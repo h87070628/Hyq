@@ -29,3 +29,10 @@ http://www.open-open.com/lib/search?q=Git%CF%EA%BD%E2&od=0
 
 Git版本管理详解(一):
 http://www.open-open.com/lib/view/open1328069609436.html
+
+#Google_android_开发相关
+#andr-opensocial.googleusercontent.com 
+203.208.46.146 www.google.com
+74.125.113.121 developer.android.com
+203.208.46.146 dl.google.com
+203.208.46.146 dl-ssl.google.com
