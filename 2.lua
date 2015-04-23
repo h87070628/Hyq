@@ -50,5 +50,6 @@ CREATE TABLE IF NOT EXISTS `player_status_%02d` (
 	)ENGINE=InnoDB DEFAULT CHARSET=utf8;
 ]],db_index));
 end
+
 --status 字节字符串,能按位设置值.
 --char_buf 字符字符串,只能按字符设置值,范围为(0-255).
