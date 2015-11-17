@@ -72,7 +72,7 @@ function query()
 	#查询Top域名需要指定HOST服务器.
 	#b=`whois ${varch} -h whois.verisign-grs.com | grep "${key}"`;
 	b=`whois ${varch} | grep "${key}"`;
-	echo "${b}";
+	#echo "${b}";
 
 	if [ "${b}" == "" ] ; then
 		echo "${varch} 已经被注册 ${b}." >> ${FILE};
