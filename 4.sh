@@ -53,11 +53,11 @@ function transform_ch()
 function query()
 {
 
-	varch="${1}${2}${3}${4}${5}";	#baidu.com
+	varch="${1}${2}${3}${4}${5}${6}";	#baidu.com
 
 	key="";	
 	b="";
-	case ${5} in
+	case ${6} in
 		".COM")key="No match for \"${varch}\"\.";;
 		".NET")key="No match for \"${varch}\"\.";;
 		".cn")key="no matching record";;
@@ -70,8 +70,9 @@ function query()
 	#b=`whois ${varch} | grep "${key}"`;
 
 	#查询Top域名需要指定HOST服务器.
-	b=`whois ${varch} -h whois.nic.top | grep "${key}"`;
-	#echo "${b}";
+	#b=`whois ${varch} -h whois.verisign-grs.com | grep "${key}"`;
+	b=`whois ${varch} | grep "${key}"`;
+	echo "${b}";
 
 	if [ "${b}" == "" ] ; then
 		echo "${varch} 已经被注册 ${b}." >> ${FILE};
@@ -108,74 +109,55 @@ begin=27;	#起始值,对应于字符表.
 end=37;		#终止值,对应与字符表.
 
 count=${begin};
+count=$((count+1));	#从10000开始搜索.
+
 count2=${begin};
 count3=${begin};
 count4=${begin};
+count5=${begin};
 
 first="";
 second="";
 three="";
 four="";
+five="";
 
 while [ $count -lt ${end}	]		#构造第一个字符. 
 do
-
-transform_ch ${count};
-first="${var}"
-count2=$((${begin}));				
+	transform_ch ${count};
+	first="${var}"
+	count2=$((${begin}));				
 	while [ $count2 -lt ${end}	]	#构造第二个字符.
 	do
 		transform_ch ${count2};
 		second="${var}"
-		#query ${first} ${second} ".top" #调用函数.
-
 		count3=$((${begin}));
 
 		while [ $count3 -lt ${end}	]	#构造第三个字符.
 		do
-		transform_ch ${count3};
-		three="${var}";
-		#echo "${first}${second}${three}.com" >> all;
-
-		#query ${first} ${second} ${three} ".top" #调用函数.
-		#query ${first} ${second} ${three} ".net" #调用函数.
-
-		count4=$((${begin}));
+			transform_ch ${count3};
+			three="${var}";
+			count4=$((${begin}));
 			while [ $count4 -lt ${end}	]
 			do
-			transform_ch ${count4};
-			four="${var}";
-			#query ${first} ${second} ${three} ${four} ".cn" #调用函数.
-			#query ${first} ${second} ${three} ${four} ".com.cn" #调用函数.
-			#query ${first} ${second} ${three} ${four} ".COM" #调用函数.
-			#query ${first} ${second} ${three} ${four} ".NET" #调用函数.
-			#$echo "${first}${second}${three}${four}.top";
-			query ${first} ${second} ${three} ${four} ".top" #调用函数.
-
-			count4=$((count4+1));
+				transform_ch ${count4};
+				four="${var}";
+				count5=$((${begin}));
+				while [ $count5 -lt ${end}	]
+				do
+					transform_ch ${count5};
+					five="${var}";
+					echo "${first}${second}${three}${four}${five}.com";
+					query ${first} ${second} ${three} ${four} ${five} ".COM" #调用函数.
+					count5=$((count5+1));
+				done
+				count4=$((count4+1));
 			done
-		#query ${first} ${second} ${three} ".com.cn" #调用函数.
-		#query ${first} ${second} ${three} ".cn" #调用函数.
-
-		count3=$((count3+1));
+			count3=$((count3+1));
 		done
-
-##############################################
-#		varch="${first}${second}.net";
-		#echo "${first}${second}";
-#		b=`whois ${varch} | grep "Creation Date:"`;
-
-#		if [ "${b}" != "" ] ; then
-#		  echo "${varch} 已经被注册 ${b}." >> ${FILE};
-#		else
-#		  echo "${varch} 未被注册." >> ${FILE};
-#		fi
-##############################################
-
 		count2=$((count2+1));
 	done
-
-count=$((count+1));
+	count=$((count+1));
 done
 #####################################################################
 exit 0;
