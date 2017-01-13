@@ -31,27 +31,40 @@ struct handle_storage {
 
 static struct handle_storage *H = NULL;
 
+//{将框架内所有的服务都归集到handle_storage,便于管理这些服务}
+//将服务与一个"ID"进行绑定,注册一个服务.
 uint32_t
 skynet_handle_register(struct skynet_context *ctx) {
+	//引用局部静态变量,单例实现
 	struct handle_storage *s = H;
 
+	//锁定读写锁
 	rwlock_wlock(&s->lock);
 	
+	//无限循环
 	for (;;) {
 		int i;
+		//遍历当前可用槽值
 		for (i=0;i<s->slot_size;i++) {
 			uint32_t handle = (i+s->handle_index) & HANDLE_MASK;
 			int hash = handle & (s->slot_size-1);
+			//当槽位为空
 			if (s->slot[hash] == NULL) {
+				//将服务上下文保存起来
 				s->slot[hash] = ctx;
+				//将"服务编号"+1,以便处理下一个服务
 				s->handle_index = handle + 1;
 
+				//解锁读写锁
 				rwlock_wunlock(&s->lock);
 
+				//将本节点的信息与服务编号合并,生成一个在整个skynet网络都是唯一的服务编号{harbor,保存的是框架编号, 用于与其他skynet节点通信的识别码}
 				handle |= s->harbor;
+				//返回这个节点编号
 				return handle;
 			}
 		}
+		//当槽位不足时,进行槽位内存分配{*2策略},并对已注册服务进行复制
 		assert((s->slot_size*2 - 1) <= HANDLE_MASK);
 		struct skynet_context ** new_slot = skynet_malloc(s->slot_size * 2 * sizeof(struct skynet_context *));
 		memset(new_slot, 0, s->slot_size * 2 * sizeof(struct skynet_context *));
@@ -60,8 +73,11 @@ skynet_handle_register(struct skynet_context *ctx) {
 			assert(new_slot[hash] == NULL);
 			new_slot[hash] = s->slot[i];
 		}
+		//释放原有槽管理内存
 		skynet_free(s->slot);
+		//指向新的槽管理内存
 		s->slot = new_slot;
+		//将槽容量*2
 		s->slot_size *= 2;
 	}
 }
@@ -239,13 +255,14 @@ skynet_handle_namehandle(uint32_t handle, const char *name) {
 	return ret;
 }
 
+//{将框架内所有的服务都归集到handle_storage,便于管理这些服务}
 void 
 skynet_handle_init(int harbor) {
 	//断言H为空
 	assert(H==NULL);
 	//分配一个handle_storage大小的内存,并用s指向它
 	struct handle_storage * s = skynet_malloc(sizeof(*H));
-	//设置s成员变量slot_size
+	//设置s成员变量slot_size, 初始容纳四个服务,当服务超过时,成倍增长
 	s->slot_size = DEFAULT_SLOT_SIZE;
 	//分配固定槽*context的内存
 	s->slot = skynet_malloc(s->slot_size * sizeof(struct skynet_context *));
@@ -255,8 +272,9 @@ skynet_handle_init(int harbor) {
 	//初始化读写锁,当系统不支持__sync_synchronize,使用pthread_rwlock_t实现
 	rwlock_init(&s->lock);
 	// reserve 0 for system
-	//记录当前skynet的节点编号及其他一些信息
+	//记录当前skynet的节点编号
 	s->harbor = (uint32_t) (harbor & 0xff) << HANDLE_REMOTE_SHIFT;
+	//及其他一些信息
 	s->handle_index = 1;
 	s->name_cap = 2;
 	s->name_count = 0;

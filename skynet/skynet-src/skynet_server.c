@@ -157,10 +157,13 @@ skynet_context_new(const char * name, const char *param) {
 	ctx->cpu_cost = 0;
 	ctx->cpu_start = 0;
 	ctx->message_count = 0;
+	//是否统计cpu占用
 	ctx->profile = G_NODE.profile;
 	// Should set to 0 first to avoid skynet_handle_retireall get an uninitialized handle
 	ctx->handle = 0;	
+	//将服务与一个全skynet网络唯一的ID进行绑定
 	ctx->handle = skynet_handle_register(ctx);
+	//使用服务唯一ID作为参数,建立一个消息队列
 	struct message_queue * queue = ctx->queue = skynet_mq_create(ctx->handle);
 	// init function maybe use ctx->handle, so it must init at last
 	context_inc();

@@ -74,13 +74,18 @@ skynet_globalmq_pop() {
 	return mq;
 }
 
+//以服务全局ID为参数创建一个消息队列
 struct message_queue * 
 skynet_mq_create(uint32_t handle) {
+	//分配一个消息队列结构
 	struct message_queue *q = skynet_malloc(sizeof(*q));
+	//设置服务ID
 	q->handle = handle;
+	//设置最大消息量
 	q->cap = DEFAULT_QUEUE_SIZE;
 	q->head = 0;
 	q->tail = 0;
+	//初始化原子锁
 	SPIN_INIT(q)
 	// When the queue is create (always between service create and service init) ,
 	// set in_global flag to avoid push it to global queue .
