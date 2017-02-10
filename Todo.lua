@@ -83,7 +83,7 @@ local function removeYCcard(bs)
 
 	if(brand ~= 0)then
 		--存在任意顺万条,优先处理
-		if(brand <= 7 and (removebrand(bs, brand, 1)) and removebrand(bs, brand + 1, 1) and removebrand(bs, brand + 2, 1))then
+		if(brand%10 <= 7 and (removebrand(bs, brand, 1)) and removebrand(bs, brand + 1, 1) and removebrand(bs, brand + 2, 1))then
 			return true
 		end
 	else
@@ -137,7 +137,20 @@ local function process3card(bs)
 	if(hasPeng(bs, brand))then
 		return true
 	else
-		if(math.floor(brand / 10) == 0)then
+		brand = 0
+		--找到第一张非字牌
+		for i = 1, #bs do
+			if(math.floor(bs[1] / 10) > 0)then
+				brand = bs[1]
+				break
+			end
+		end
+
+		if(brand ~= 0)then
+			if(brand%10 <= 7 and bs[2] == brand + 1 and bs[3] == brand + 2)then
+				return true
+			end
+		else
 			--字牌处理
 			local feng = false
 			if(brand > 4)then
@@ -160,10 +173,6 @@ local function process3card(bs)
 			end
 
 			if(bs[1] ~= bs[2] and bs[1] ~= bs[3] and bs[2] ~= bs[3])then
-				return true
-			end
-		else
-			if(brand <= 7 and bs[2] == brand + 1 and bs[3] == brand + 2)then
 				return true
 			end
 		end
@@ -323,7 +332,7 @@ local function processhasDuicard(bs)
 end
 
 function main()
-	local brands = {1,1,2,3,4};
+	local brands = {4,4,4,5,5,5,6,7,11,12,13};
 	--table.foreachi(brands, function(i,v) print(v); end)
 	print(processhasDuicard(brands))
 end
