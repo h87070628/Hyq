@@ -71,8 +71,22 @@ local function hasPeng(bs, brand)
 end
 
 local function removeYCcard(bs)
-	local brand = bs[1];
-	if(math.floor(brand / 10) == 0)then
+	local brand = 0;
+
+	--找到第一张非字牌
+	for i = 1, #bs do
+		if(math.floor(bs[1] / 10) > 0)then
+			brand = bs[1]
+			break
+		end
+	end
+
+	if(brand ~= 0)then
+		--存在任意顺万条,优先处理
+		if(brand <= 7 and (removebrand(bs, brand, 1)) and removebrand(bs, brand + 1, 1) and removebrand(bs, brand + 2, 1))then
+			return true
+		end
+	else
 		--处理存在中发白任意一张,要组成一簇牌,则必须拥有其他两张
 		if(hasCard(bs, 5) or hasCard(bs, 6) or hasCard(bs, 7))then
 			if((removebrand(bs, 5, 1)) and removebrand(bs, 6, 1) and removebrand(bs, 7, 1))then
@@ -110,10 +124,6 @@ local function removeYCcard(bs)
 			if((removebrand(bs, brand, 1)) and removebrand(bs, brand_2, 1) and removebrand(bs, brand_3, 1))then
 				return true
 			end
-		end
-	else
-		if(brand <= 7 and (removebrand(bs, brand, 1)) and removebrand(bs, brand + 1, 1) and removebrand(bs, brand + 2, 1))then
-			return true
 		end
 	end
 	return false
