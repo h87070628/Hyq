@@ -166,10 +166,15 @@ skynet_context_new(const char * name, const char *param) {
 	//使用服务唯一ID作为参数,建立一个消息队列
 	struct message_queue * queue = ctx->queue = skynet_mq_create(ctx->handle);
 	// init function maybe use ctx->handle, so it must init at last
+	//total原子计数+1
 	context_inc();
 
+	//上锁线程同步锁
 	CHECKCALLING_BEGIN(ctx)
+	//实例化一个具体的服务,通过{param}传递可能是lua脚本,并初始化
+	//调用指定服务的init函数,返回非0则服务初始化失败
 	int r = skynet_module_instance_init(mod, inst, ctx, param);
+	//解锁线程同步锁
 	CHECKCALLING_END(ctx)
 	if (r == 0) {
 		struct skynet_context * ret = skynet_context_release(ctx);

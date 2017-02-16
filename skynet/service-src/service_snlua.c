@@ -144,15 +144,24 @@ launch_cb(struct skynet_context * context, void *ud, int type, int session, uint
 	return 0;
 }
 
+//初始化某个snlua服务,snlua在create时创建了一个lua虚拟机
+//l, 服务实例
+//ctx,与服务实例关联的一些上下文配置资源
+//args,参数{通常为脚本名}
 int
 snlua_init(struct snlua *l, struct skynet_context *ctx, const char * args) {
+	//复制参数
 	int sz = strlen(args);
 	char * tmp = skynet_malloc(sz);
 	memcpy(tmp, args, sz);
+	//设置启动回调
 	skynet_callback(ctx, l , launch_cb);
+	//注册一个服务名称,如果没用字符串,直接返回16进制格式返回服务":唯一ID"
+	//否则注册一个字符串格式的名字
 	const char * self = skynet_command(ctx, "REG", NULL);
 	uint32_t handle_id = strtoul(self+1, NULL, 16);
 	// it must be first message
+	//发送一个消息
 	skynet_send(ctx, 0, handle_id, PTYPE_TAG_DONTCOPY,0, tmp, sz);
 	return 0;
 }
