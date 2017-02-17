@@ -161,7 +161,7 @@ snlua_init(struct snlua *l, struct skynet_context *ctx, const char * args) {
 	const char * self = skynet_command(ctx, "REG", NULL);
 	uint32_t handle_id = strtoul(self+1, NULL, 16);
 	// it must be first message
-	//发送一个消息
+	//由框架向目标服务handle_id投递一个消息,必须保证这是服务的接收的第一条消息, 消息的内容是调用参数{脚本名,session设置为0表示不需要回应}
 	skynet_send(ctx, 0, handle_id, PTYPE_TAG_DONTCOPY,0, tmp, sz);
 	return 0;
 }

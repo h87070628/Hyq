@@ -242,8 +242,10 @@ skynet_context_release(struct skynet_context *ctx) {
 	return ctx;
 }
 
+//将消息推入目标服务的消息队列(目标服务可能在远程)
 int
 skynet_context_push(uint32_t handle, struct skynet_message *message) {
+	//通过唯一识别码,获取到目标服务的ctx
 	struct skynet_context * ctx = skynet_handle_grab(handle);
 	if (ctx == NULL) {
 		return -1;
@@ -712,42 +714,67 @@ _filter_args(struct skynet_context * context, int type, int *session, void ** da
 	*sz |= (size_t)type << MESSAGE_TYPE_SHIFT;
 }
 
+//向目标服务投递消息
+//context,服务实例的状态机,保存了该服务实例的各种状态
+//source,发送方的唯一标识
+//destination,接收方的唯一标识
+//type,代表消息编码类别
+//session,由发起方提供,标识这条消息,当回应方将这个session返回给发起方时,发起方能知道回应的消息对应的是哪条消息,这个由框架维护
+//data,发送的消息
+//sz,代表消息的长度
 int
 skynet_send(struct skynet_context * context, uint32_t source, uint32_t destination , int type, int session, void * data, size_t sz) {
+	//对消息的长度进行判断
 	if ((sz & MESSAGE_TYPE_MASK) != sz) {
 		skynet_error(context, "The message to %x is too large", destination);
+		//如果消息的非复制的,则释放消息所占用的内存
 		if (type & PTYPE_TAG_DONTCOPY) {
 			skynet_free(data);
 		}
 		return -1;
 	}
+	//处理参数,如果需要拷贝消息则拷贝,如果需要分配session,则分配sessoin,根据type的设置来进行
 	_filter_args(context, type, &session, (void **)&data, &sz);
 
+	//如果源地址设置为0,这将当前服务的全局唯一标识符设置为源地址
 	if (source == 0) {
 		source = context->handle;
 	}
 
+	//目标服务地址,如果设置为0,直接返回session
 	if (destination == 0) {
 		return session;
 	}
+
+	//通过目标地址,对消息进行区分,如果是集群消息,则采用集群消息封装,
+	//原因是,不同机器硬件之间的skynet服务,是不可靠的,可能目标服务已经意外宕机,
+	//而同一框架(进程)下的skynet服务是可靠的,可感知的)
 	if (skynet_harbor_message_isremote(destination)) {
+		//不推荐的集群方案
 		struct remote_message * rmsg = skynet_malloc(sizeof(*rmsg));
 		rmsg->destination.handle = destination;
 		rmsg->message = data;
 		rmsg->sz = sz;
+		//向远程节点投递消息
 		skynet_harbor_send(rmsg, source, session);
 	} else {
+		//使用cluster集群模式,该方案需要自己实现,参考https://github.com/cloudwu/skynet/wiki/Cluster
+		//原理大概是启动一个本地服务,通过cluster接口,访问外部服务,而在skynet框架内部依然可以将它当做"内部服务"来处理.
+		//封装一个skynet消息
 		struct skynet_message smsg;
-		smsg.source = source;
-		smsg.session = session;
-		smsg.data = data;
-		smsg.sz = sz;
+		smsg.source = source;		//消息发送方
+		smsg.session = session;		//消息编号
+		smsg.data = data;		//消息数据
+		smsg.sz = sz;			//消息长度
 
+		//将消息推入目标服务的消息队列,同一框架下的消息投递
 		if (skynet_context_push(destination, &smsg)) {
+			//推入失败则释放消息数据
 			skynet_free(data);
 			return -1;
 		}
 	}
+	//返回消息编号:session
 	return session;
 }
 
