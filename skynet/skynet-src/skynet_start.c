@@ -180,8 +180,10 @@ thread_worker(void *p) {
 
 static void
 start(int thread) {
+	//定义多个线程,线程数 + 3
 	pthread_t pid[thread+3];
 
+	//守护线程
 	struct monitor *m = skynet_malloc(sizeof(*m));
 	memset(m, 0, sizeof(*m));
 	m->count = thread;
@@ -282,8 +284,14 @@ skynet_start(struct skynet_config * config) {
 		exit(1);
 	}
 
+	//解析config文件,根据配置文件设置skynet整个框架的属性,例如单节点或者多节点模式,最后读取config.start字段,启动第一个服务(main)
 	bootstrap(ctx, config->bootstrap);
 
+	//上面实例化了两个服务一个log,
+	//另一个是bootstrap = "snlua main", bootstrap 其实就是用户自定义的lua脚本,使用snlua来启动, 在这个lua脚本中会通过会启动多个服务
+	//目前snlua被创建,并创建了一个服务实例, 并向该实例投递一个消息, 消息就是脚本的名字
+	
+	//接下来,以线程数为参数调用start函数{TODO}
 	start(config->thread);
 
 	// harbor_exit may call socket send, so it should exit before socket_free

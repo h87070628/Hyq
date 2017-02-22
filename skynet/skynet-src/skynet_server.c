@@ -176,12 +176,17 @@ skynet_context_new(const char * name, const char *param) {
 	int r = skynet_module_instance_init(mod, inst, ctx, param);
 	//解锁线程同步锁
 	CHECKCALLING_END(ctx)
+	//如果初始化成功(snlua服务在init中向自己发送了一条消息,携带了脚本名字)
 	if (r == 0) {
+		//减少一次服务的引用计数,当ctx->ref == 0,会释放服务实例,释放消息队列,并清理内存占用
 		struct skynet_context * ret = skynet_context_release(ctx);
 		if (ret) {
+			//直接初始化成功标记
 			ctx->init = true;
 		}
+		//将当前消息队列附加在到框架消息队列中
 		skynet_globalmq_push(queue);
+		//打印日志消息
 		if (ret) {
 			skynet_error(ret, "LAUNCH %s %s", name, param ? param : "");
 		}
@@ -242,15 +247,16 @@ skynet_context_release(struct skynet_context *ctx) {
 	return ctx;
 }
 
-//将消息推入目标服务的消息队列(目标服务可能在远程)
+//将消息推入目标服务的消息队列
 int
 skynet_context_push(uint32_t handle, struct skynet_message *message) {
-	//通过唯一识别码,获取到目标服务的ctx
+	//通过唯一识别码,获取到目标服务的ctx,并将引用计数+1
 	struct skynet_context * ctx = skynet_handle_grab(handle);
 	if (ctx == NULL) {
 		return -1;
 	}
 	skynet_mq_push(ctx->queue, message);
+	//引用计数减1
 	skynet_context_release(ctx);
 
 	return 0;
