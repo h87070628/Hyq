@@ -255,6 +255,7 @@ skynet_context_push(uint32_t handle, struct skynet_message *message) {
 	if (ctx == NULL) {
 		return -1;
 	}
+	//将消息压入到当前服务的消息队列中.
 	skynet_mq_push(ctx->queue, message);
 	//引用计数减1
 	skynet_context_release(ctx);
@@ -281,10 +282,14 @@ skynet_isremote(struct skynet_context * ctx, uint32_t handle, int * harbor) {
 	return ret;
 }
 
+//将从全局消息队列中取出的消息用服务实例关联(ctx)的处理函数进行处理.
 static void
 dispatch_message(struct skynet_context *ctx, struct skynet_message *msg) {
+	//断言服务实例已经初始化
 	assert(ctx->init);
+	//上锁线程同步锁
 	CHECKCALLING_BEGIN(ctx)
+	//设置一个线程内的全局变量,key = 框架ID, varlue = 服务实例ID
 	pthread_setspecific(G_NODE.handle_key, (void *)(uintptr_t)(ctx->handle));
 	int type = msg->sz >> MESSAGE_TYPE_SHIFT;
 	size_t sz = msg->sz & MESSAGE_TYPE_MASK;
@@ -304,6 +309,7 @@ dispatch_message(struct skynet_context *ctx, struct skynet_message *msg) {
 	if (!reserve_msg) {
 		skynet_free(msg->data);
 	}
+	//解锁线程同步锁
 	CHECKCALLING_END(ctx)
 }
 
@@ -319,18 +325,22 @@ skynet_context_dispatchall(struct skynet_context * ctx) {
 
 struct message_queue * 
 skynet_context_message_dispatch(struct skynet_monitor *sm, struct message_queue *q, int weight) {
+	//当q为空时候,从全局队列中取出一个消息队列.
 	if (q == NULL) {
 		q = skynet_globalmq_pop();
 		if (q==NULL)
 			return NULL;
 	}
 
+	//获取到消息队列所属的服务id
 	uint32_t handle = skynet_mq_handle(q);
 
+	//根据唯一id获取到服务的状态机,并添加一次服务引用计数
 	struct skynet_context * ctx = skynet_handle_grab(handle);
 	if (ctx == NULL) {
 		struct drop_t d = { handle };
 		skynet_mq_release(q, drop_message, &d);
+		//如果当前服务已经不存在,从当前全局消息队列中将该服务关联的消息队列删除
 		return skynet_globalmq_pop();
 	}
 
@@ -338,26 +348,34 @@ skynet_context_message_dispatch(struct skynet_monitor *sm, struct message_queue 
 	struct skynet_message msg;
 
 	for (i=0;i<n;i++) {
+		//从消息队列中取出一条消息,成功时,返回0,失败返回1
 		if (skynet_mq_pop(q,&msg)) {
+			//减少一次服务的引用计数,当ctx->ref == 0,会释放服务实例,释放消息队列,并清理内存占用
 			skynet_context_release(ctx);
+			//当消息队列中没有消息时,从全局消息队列中弹出当前消息队列
 			return skynet_globalmq_pop();
 		} else if (i==0 && weight >= 0) {
+			//如果当前线程为工作线程,根据消息队列的长度,重置n的值,一次循环取出全部的消息
 			n = skynet_mq_length(q);
 			n >>= weight;
 		}
+		//检查是否消息过载,将将过载标记清0.
 		int overload = skynet_mq_overload(q);
 		if (overload) {
 			skynet_error(ctx, "May overload, message queue length = %d", overload);
 		}
 
+		//设置处理标记
 		skynet_monitor_trigger(sm, msg.source , handle);
 
+		//当没有设置回调处理函数时候,释放消息占用的内存
 		if (ctx->cb == NULL) {
 			skynet_free(msg.data);
 		} else {
 			dispatch_message(ctx, &msg);
 		}
 
+		//清除处理标记,另外一个线程在监视, 当5秒还没返回认定服务进入循环
 		skynet_monitor_trigger(sm, 0,0);
 	}
 

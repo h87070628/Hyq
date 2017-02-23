@@ -191,6 +191,7 @@ expand_queue(struct message_queue *q) {
 	q->queue = new_queue;
 }
 
+//将一条消息放入指定服务的消息队列的最后面
 void 
 skynet_mq_push(struct message_queue *q, struct skynet_message *message) {
 	assert(message);
@@ -205,6 +206,7 @@ skynet_mq_push(struct message_queue *q, struct skynet_message *message) {
 		expand_queue(q);
 	}
 
+	//若当前服务的消息队列(ctx->queue)未放入全局消息队列global_queue，放进去
 	if (q->in_global == 0) {
 		q->in_global = MQ_IN_GLOBAL;
 		skynet_globalmq_push(q);
