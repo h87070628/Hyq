@@ -305,10 +305,12 @@ start(int thread) {
 		create_thread(&pid[i+3], thread_worker, &wp[i]);
 	}
 
+	//阻塞当前"主线程",等待所有"子线程"结束,在进行资源回收
 	for (i=0;i<thread+3;i++) {
 		pthread_join(pid[i], NULL); 
 	}
 
+	//开始资源回收
 	free_monitor(m);
 }
 

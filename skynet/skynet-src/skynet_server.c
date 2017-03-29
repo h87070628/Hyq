@@ -368,10 +368,11 @@ skynet_context_message_dispatch(struct skynet_monitor *sm, struct message_queue 
 		//设置处理标记
 		skynet_monitor_trigger(sm, msg.source , handle);
 
-		//当没有设置回调处理函数时候,释放消息占用的内存
+		//当没有设置消息处理函数时候,释放消息占用的内存
 		if (ctx->cb == NULL) {
 			skynet_free(msg.data);
 		} else {
+			//分派消息到指定服务中
 			dispatch_message(ctx, &msg);
 		}
 
