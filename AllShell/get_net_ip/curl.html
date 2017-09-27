@@ -1,0 +1,183 @@
+curl.lua<hr><h3>
+ cURL bindings.</h3>
+<i>Description</i>:  read the cURL curl_easy_setopt manpage.
+ As a convention all CURL_XXXXX and CURLXXXXX names are mapped to curl.XXXXX
+ constants. options taking a long now take a number, options taking a string 
+ here take a string (no need to ensure the string will be available until
+ you call perform, the bindings do this for you). Functions to write like the
+ curl.OPT_WRITEFUNCTION and curl.OPT_HEADERFUNCTION take a string argument and
+ a number (the string len) must return a couple, byte,server and error message . if the number of byte returned is different from the string len it is 
+ considered an error. this is an example of a callback factory: <br>
+ <pre style="color:blue;">
+ function build_w_cb(t)
+         return function(s,len)
+                   <i>stores the received data in the table t</i>
+                 table.insert(t,s)
+                   <i>return number_of_byte_served, error_message</i>
+                   <i>number_of_byte_served ~= len is an error</i>
+                 return len,nil
+         end
+ end
+ </pre>
+ This cb factory stores all the chunks received in table t. you can have the
+ whole file back using table.concat(t). The callback for 
+ curl.OPT_READFUNCTION takes a number, the number of the maximum amount of 
+ data that can return. Here a simple example of an infinite stream of '#':<br>
+ <pre style="color:blue;">
+ function build_r_cb()
+      return function(n)
+              local s = string.rep("#",n)
+                <i>return size_of_data,data</i>
+                <i>size_of_data = 0 means end of data</i>
+                <i>size_of_data must be <= n</i>
+              return string.len(s),s
+      end
+end
+ </pre>
+ curl_slist are mapped to lua tables {"item1","item2",...}. For example
+ curl.OPT_HTTPHEADER may be called in this way:<br>
+ <pre style="color:blue;">
+ c:setopt(curl.OPT_HTTPHEADER,{"Referer: my_home!","Dummy-field: hello"})
+ </pre>
+ Last important case is the curl.OPT_HTTPPOST for which a special syntax is 
+ supported:
+ <pre style="color:blue;">
+ c:setopt(curl.OPT_HTTPPOST,{
+
+      {curl.FORM_COPYNAME,"name1",
+       curl.FORM_COPYCONTENTS,"data1",
+       curl.FORM_CONTENTTYPE,"Content-type: text/plain",
+       curl.FORM_END }
+      ,
+      {curl.FORM_COPYNAME,"name2",
+       curl.FORM_COPYCONTENTS,"data2",
+       curl.FORM_CONTENTTYPE,"Content-type: text/plain",
+       curl.FORM_END}
+ })
+ </pre>
+ And now a simple example of an HTTP GET with a proxy:<br>
+ <pre style="color:blue;">
+gl_b = {}
+gl_h = {}
+
+c = curl.easy_init() 
+c:setopt(curl.OPT_URL,'http://tassi.web.cs.unibo.it/cgi-bin/stats.cgi')
+c:setopt(curl.OPT_WRITEFUNCTION,build_w_cb(gl_b))
+c:setopt(curl.OPT_HEADERFUNCTION,build_w_cb(gl_h))
+c:setopt(curl.OPT_PROXY,"localhost:3000")
+c:setopt(curl.OPT_PROXYUSERPWD,"ciccio:ciccio")
+print("\n\t$$ performing... returns code,error $$\n")
+print(c:perform())
+print("\n\t$$ here you see the header, line per line $$\n")
+table.foreach(gl_h,function(i,s) print(i.."= "..string.gsub(s,"\n","")) end)
+print("\n\t$$ and here you see the data, after concatenation of "..
+      table.getn(gl_b).." chunks $$\n")
+print(table.concat(gl_b))
+</pre>
+
+<br>
+<p style="margin:0 0 0 0;border-style:none">
+</p><p style="margin:0 0 0 20;border-style:none">
+</p>
+<h3>
+Functions
+</h3><p style="margin:0 0 0 0;border-style:none">
+<a href="#curl.easy_init"><code><b>curl.easy_init</code></b>
+</a><code>()</code>
+</p><p style="margin:0 0 0 20;border-style:none">
+Create a curl handler.</p>
+<p style="margin:0 0 0 0;border-style:none">
+<a href="#curl.escape"><code><b>curl.escape</code></b>
+</a><code>(s)</code>
+</p><p style="margin:0 0 0 20;border-style:none">
+URLencodes the string.</p>
+<p style="margin:0 0 0 0;border-style:none">
+<a href="#curl.unescape"><code><b>curl.unescape</code></b>
+</a><code>(s)</code>
+</p><p style="margin:0 0 0 20;border-style:none">
+URLdecodes the string.</p>
+<p style="margin:0 0 0 0;border-style:none">
+<a href="#curl.version"><code><b>curl.version</code></b>
+</a><code>()</code>
+</p><p style="margin:0 0 0 20;border-style:none">
+version.</p>
+<p style="margin:0 0 0 0;border-style:none">
+<a href="#curl.version_info"><code><b>curl.version_info</code></b>
+</a><code>()</code>
+</p><p style="margin:0 0 0 20;border-style:none">
+version informations.</p>
+<p style="margin:0 0 0 0;border-style:none">
+<a href="#perform"><code><b>perform</code></b>
+</a><code>()</code>
+</p><p style="margin:0 0 0 20;border-style:none">
+Starts curl.</p>
+<p style="margin:0 0 0 0;border-style:none">
+<a href="#setopt"><code><b>setopt</code></b>
+</a><code>(opt,data)</code>
+</p><p style="margin:0 0 0 20;border-style:none">
+The setopt function.</p>
+<ul>
+<br><br>
+</ul>
+<p>
+<h3>
+Functions
+</h3><a name="curl.easy_init"><code><b>curl.easy_init</code></b>
+</a><code>()</code>
+<ul>
+<b>Create a curl handler.</b>
+<br> <br>
+<i>Return Value:</i> <b>userdata</b> The CURL* handler object.<br>
+</ul>
+<p>
+<a name="curl.escape"><code><b>curl.escape</code></b>
+</a><code>(s)</code>
+<ul>
+<b>URLencodes the string.</b>
+<br> <br>
+<i>Return Value:</i> <b>string</b> The escaped string.<br>
+</ul>
+<p>
+<a name="curl.unescape"><code><b>curl.unescape</code></b>
+</a><code>(s)</code>
+<ul>
+<b>URLdecodes the string.</b>
+<br> <br>
+<i>Return Value:</i> <b>string</b> The unescaped string.<br>
+</ul>
+<p>
+<a name="curl.version"><code><b>curl.version</code></b>
+</a><code>()</code>
+<ul>
+<b>version.</b>
+<br> <br>
+<i>Return Value:</i> <b>string</b> The version string.<br>
+</ul>
+<p>
+<a name="curl.version_info"><code><b>curl.version_info</code></b>
+</a><code>()</code>
+<ul>
+<b>version informations.</b>
+<br> <br>
+<i>Return Value:</i> <b>table</b> The version struct.<br>
+</ul>
+<p>
+<a name="perform"><code><b>perform</code></b>
+</a><code>()</code>
+<ul>
+<b>Starts curl.</b>
+<br> <br>
+<i>Return Value:</i> number,errorstring number not zero means an error.<br>
+</ul>
+<p>
+<a name="setopt"><code><b>setopt</code></b>
+</a><code>(opt,data)</code>
+<ul>
+<b>The setopt function.</b>
+<br> <dt><i>Parameters</i><table>
+<tr><td valign="top"><code>opt</code></td><td><b>number</b> one of curl.OPT_*</td></tr>
+</table>
+<br>
+</ul>
+<p>
+<hr><small>This file was automatically generated by LuaDoc in 18 of August of 2006.</small>
