@@ -35,7 +35,7 @@ local function sendMsg(data, handler)
 		local ret_b = {}
 		local ret_h = {}
 		local c = curl.easy_init()
-		c:setopt(curl.OPT_URL, "http://192.168.8.180/phpinfo.php")
+		c:setopt(curl.OPT_URL, "http://qxu1194150150.my3w.com/phpinfo.php")
 		c:setopt(curl.OPT_WRITEFUNCTION,build_w_cb(ret_b))
 		c:setopt(curl.OPT_HEADERFUNCTION,build_w_cb(ret_h))
 		c:setopt(curl.OPT_HTTPPOST,{
@@ -60,6 +60,7 @@ end
 local function get_net_ip()
 		local net_IP = nil
 		local iWay = math.random(10) % 2
+		--http://pv.sohu.com/cityjson?ie=utf-8
 		local www = (iWay == 0) and "http://www.ipinfo.io" or "http://ip.chinaz.com/getip.aspx"
 		local gl_b = {}
 		local gl_h = {}
