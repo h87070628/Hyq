@@ -16,7 +16,7 @@ function mgr:new()
 	return obj
 end
 
-function mgr:Shared()
+function mgr:shared()
 	if self.m_pShared == nil then
 		self.m_pShared = self:new()
 		self:init()
@@ -24,7 +24,7 @@ function mgr:Shared()
 	return self.m_pShared
 end
 
-function mgr:destroyInstance()
+function mgr:destroy()
 	self:clean()
 	if self.m_pShared then
 		self.m_pShared = nil
@@ -48,5 +48,5 @@ end
 function mgr:clean()
 end
 
---直接创建单例对象
-Manage:Shared()
+--直接构造单例对象
+Manage:shared()
