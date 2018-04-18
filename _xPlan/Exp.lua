@@ -29,13 +29,14 @@
 -- }
 --
 
---创建一个按钮组
+--按钮组
 --传递一组btn,以及统一的回调函数
 --通过tag识别当前选择的是哪个按钮
 --默认选中第一项
 --callback,点击项
 --change,之前的选中项
-function dlg:button_group(btns, callback, change)
+--didx, 默认选中的项
+function dlg:button_group(btns, callback, change, didx)
 		local function click(sender)
 				if(sender:isEnabled() and table.nums(btns) > 0)then
 						for ii, vv in ipairs(btns)do
@@ -48,11 +49,12 @@ function dlg:button_group(btns, callback, change)
 						callback(sender)
 				end
 		end
+		didx = didx or 1
 		for i, v in ipairs(btns)do
 				--添加监听
 				v:addClickEventListener(click)
 				--默认选择第一项
-				if(i == 1)then
+				if(i == didx)then
 						click(v)
 				end
 		end
@@ -69,10 +71,12 @@ self:button_group(self.cfg.buttons, function(sender)
 		print("Tag:" .. sender:getTag())
 		self:getControl("Button_Enabled", nil, sender):setVisible(false)
 		self:getControl("Button_Disabled", nil, sender):setVisible(true)
+
+		IdolLiveMgr:set_current_tabs(sender:getTag())
 end, function(sender)
 	sender:setEnabled(true)
 	sender:setBright(true)
 	print("Tag:" .. sender:getTag())
 	self:getControl("Button_Enabled", nil, sender):setVisible(true)
 	self:getControl("Button_Disabled", nil, sender):setVisible(false)
-end)
+end, IdolLiveMgr:get_current_tabs())
