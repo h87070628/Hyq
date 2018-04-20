@@ -29,54 +29,61 @@
 -- }
 --
 
---按钮组
+--创建一个按钮组
 --传递一组btn,以及统一的回调函数
 --通过tag识别当前选择的是哪个按钮
 --默认选中第一项
 --callback,点击项
 --change,之前的选中项
---didx, 默认选中的项
 function dlg:button_group(btns, callback, change, didx)
 		local function click(sender)
-				if(sender:isEnabled() and table.nums(btns) > 0)then
+				if(sender:isEnabled() and (type(btns) == "table" and table.nums(btns) > 0))then
 						for ii, vv in ipairs(btns)do
 								if(vv:getTag() ~= sender:getTag())then
 										if(not vv:isEnabled())then 		--前一步被按下的项
-												change(vv)
+												vv:setEnabled(true)
+												vv:setBright(true)
+												if(change)then
+														change(vv)
+												end
 										end
 								end
 						end
-						callback(sender)
+
+						sender:setEnabled(false)
+						sender:setBright(false)
+						if(callback)then
+								callback(sender)
+						end
 				end
 		end
 		didx = didx or 1
-		for i, v in ipairs(btns)do
-				--添加监听
-				v:addClickEventListener(click)
-				--默认选择第一项
-				if(i == didx)then
-						click(v)
+		if(type(btns) == "table" and table.nums(btns) > 0)then
+				for i, v in ipairs(btns)do
+						--添加监听
+						v:addClickEventListener(click)
+						--默认选择第一项
+						if(i == didx)then
+								click(v)
+						end
 				end
 		end
 end
 
---使用范例
+--初始化状态标签
 self.cfg.buttons = {}
 for i = 1, 4 do
 		table.insert(self.cfg.buttons, self:getControl("Naviga_btn_" .. i, nil, Buttons))
 end
 self:button_group(self.cfg.buttons, function(sender)
-		sender:setEnabled(false)
-		sender:setBright(false)
-		print("Tag:" .. sender:getTag())
 		self:getControl("Button_Enabled", nil, sender):setVisible(false)
 		self:getControl("Button_Disabled", nil, sender):setVisible(true)
-
 		IdolLiveMgr:set_current_tabs(sender:getTag())
+		print("click tag:" .. sender:getTag())
+
+		self:update_timer()
 end, function(sender)
-	sender:setEnabled(true)
-	sender:setBright(true)
-	print("Tag:" .. sender:getTag())
 	self:getControl("Button_Enabled", nil, sender):setVisible(true)
 	self:getControl("Button_Disabled", nil, sender):setVisible(false)
+	print("front tag:" .. sender:getTag())
 end, IdolLiveMgr:get_current_tabs())
