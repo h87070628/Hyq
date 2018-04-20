@@ -19,8 +19,9 @@ function MainScene:onCreate()
 	--数据
 	self.cfg = {
 			data = {
-					10000, 10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008, 10009,
-					10010, 10011, 10012, 10013, 10014, 10015, 10016, 10017, 10018, 10019,
+					10000, 10001, 10002, 10003,
+					--10000, 10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008, 10009,
+					--10010, 10011, 10012, 10013, 10014, 10015, 10016, 10017, 10018, 10019,
 				   }
 	}
 
@@ -47,8 +48,10 @@ function MainScene:onCreate()
 	end)
 	self:btn_bind("Button_2", function()
 			--随机定位到某个item
-			local last = #pageView:getItems() - 1
-			pageView:scrollToPage(math.random(0, last))
+			local last = #self.cfg.data - 1
+			--pageView:scrollToPage(math.random(0, last))
+
+			self:setCurrentIndex(math.random(0, last) + 1)
 	end)
 	self:btn_bind("Button_3", function()
 			--打印全部序号
@@ -191,6 +194,54 @@ function MainScene:remove_data(value)
 										self:right_move()
 								end
 						end
+				end, 0)
+		end
+end
+
+--跳到指定index
+function MainScene:setCurrentIndex(index)
+		local pageView = self.cfg.pageView
+		local total = #self.cfg.data
+		if(index <= 1)then
+				index = 1
+		elseif(index >= total)then
+				index = total
+		end
+		if(total >= 1 and index <= total)then
+				pageView:removeAllPages()
+				self:scheduleGlobalOnce(function()
+						local create_item = self.cfg.create_item
+						if(index == 1)then
+								pageView:addPage(create_item(1))
+								if(total > 1)then
+										pageView:addPage(create_item(2))
+								end
+						elseif(index == 2)then
+								pageView:addPage(create_item(1))
+								pageView:addPage(create_item(2))
+								if(total > 2)then
+										pageView:addPage(create_item(3))
+								end
+						elseif(index >= total - 1)then
+								if(total - 2 >= 1)then
+										pageView:addPage(create_item(total - 2))
+								end
+								pageView:addPage(create_item(total - 1))
+								pageView:addPage(create_item(total))
+						else
+								pageView:addPage(create_item(index - 1))
+								pageView:addPage(create_item(index))
+								pageView:addPage(create_item(index + 1))
+						end
+
+						--定位
+						local items = #pageView:getItems()
+						if(items >= 3)then
+								pageView:setCurrentPageIndex(1)
+						elseif(items > 0 and items <= 2)then
+								pageView:setCurrentPageIndex(0)
+						end
+
 				end, 0)
 		end
 end
