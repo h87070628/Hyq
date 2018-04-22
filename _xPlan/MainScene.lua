@@ -24,7 +24,60 @@ function MainScene:onCreate()
 					--10010, 10011, 10012, 10013, 10014, 10015, 10016, 10017, 10018, 10019,
 				   }
 	}
+	
+	--[[
+	--scroll 定位到中间
+	local scroll = self:getResourceNode():getChildByName("ScrollView_1")
+	scroll:setScrollBarEnabled(false)
+	scroll:jumpToPercentBothDirection(cc.p(50, 50))
+	--]]
+	
+	---[[
+	--触摸处理
+	local function onTouchBegan(touch, event)
+        local target = event:getCurrentTarget()
+        
+        local locationInNode = target:convertToNodeSpace(touch:getLocation())
+        local s = target:getContentSize()
+        local rect = cc.rect(0, 0, s.width, s.height)
+        
+        if cc.rectContainsPoint(rect, locationInNode) then
+            print(string.format("sprite began... x = %f, y = %f", locationInNode.x, locationInNode.y))
+            --target:setOpacity(255)
+            return true
+        end
+        return false
+    end
 
+    local function onTouchMoved(touch, event)
+        local target = event:getCurrentTarget()
+        local posX,posY = target:getPosition()
+        local delta = touch:getDelta()
+		--print(delta.x .. "]-:MOVE:-[" .. delta.y)
+        --target:setPosition(cc.p(posX + delta.x, posY + delta.y))
+		self:move_sprite(delta.x)
+    end
+
+    local function onTouchEnded(touch, event)
+        local target = event:getCurrentTarget()
+        print("sprite onTouchesEnded..")
+        --target:setOpacity(25)
+    end
+
+    local listener1 = cc.EventListenerTouchOneByOne:create()
+    listener1:setSwallowTouches(true)
+    listener1:registerScriptHandler(onTouchBegan,cc.Handler.EVENT_TOUCH_BEGAN )
+    listener1:registerScriptHandler(onTouchMoved,cc.Handler.EVENT_TOUCH_MOVED )
+    listener1:registerScriptHandler(onTouchEnded,cc.Handler.EVENT_TOUCH_ENDED )
+	
+	local control = self:getResourceNode():getChildByName("control")
+    local eventDispatcher = self:getEventDispatcher()
+    eventDispatcher:addEventListenerWithSceneGraphPriority(listener1, control)
+
+	--node在析构时会清理关联的事件, 若需要在node析构前,释放触摸事件句柄,可以调用下面的方法
+	--eventDispatcher:removeEventListener(listener1)
+	--][
+	
 	--界面
 	self.cfg.pageView = self:getResourceNode():getChildByName("PageView_1")
 	local pageView = self.cfg.pageView
@@ -160,6 +213,10 @@ function MainScene:right_move()
 		end
 end
 
+--插入数据
+function MainScene:insert_data()
+end
+
 --删除数据()
 function MainScene:remove_data(value)
 		--遍历items,确定正在显示的项目是否是删除的项
@@ -270,4 +327,27 @@ function MainScene:btn_bind(btn_name, callback)
 		end
 		btn:addTouchEventListener(callback_)
 end
+
+--远中近三景移动
+function MainScene:move_sprite(range)
+		--print("move: " .. range)
+
+		local near 	 = self:getResourceNode():getChildByName("sNear");
+		local middle = self:getResourceNode():getChildByName("sMiddle");
+		local far 	 = self:getResourceNode():getChildByName("sFar");
+
+		local pos_n = near:getPositionX()
+		local pos_m = middle:getPositionX()
+		local pos_f = far:getPositionX()
+
+		--当前位置 - 起始位置 + 将要移动的距离
+		--小于可移动区间,则移动否则不处理
+		local offset = pos_f - 480 + (range * 4)
+		if(math.abs(offset) < 520)then
+				near:setPositionX(pos_n + range)
+				middle:setPositionX(pos_m + range * 2)
+				far:setPositionX(pos_f + range * 4)
+		end
+end
+
 return MainScene
