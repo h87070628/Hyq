@@ -1,5 +1,9 @@
 1.DialogMgr需要提供隐藏某个界面的接口,以提高绘制效率
-
+数学系
+经济学
+心理学
+社会学
+文学系
 
 --创建剪裁节点
 -- local circle = cc.Sprite:create("ui_v3/idol_live/xuanchuantu.png")
