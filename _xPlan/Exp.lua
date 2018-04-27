@@ -4,7 +4,19 @@
 心理学
 社会学
 文学系
-
+高玩系
+--
+核心战斗组
+网络数据组
+界面设计组
+框架工具组
+--
+框架优化,数据管理
+核心战斗,逻辑功能
+--
+功能测试{开发功能}
+基本测试{登录,注册,充值}
+完整测试{全部内容}
 --创建剪裁节点
 -- local circle = cc.Sprite:create("ui_v3/idol_live/xuanchuantu.png")
 -- --circle:setScaleX(4);
