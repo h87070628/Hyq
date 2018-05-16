@@ -1,0 +1,89 @@
+execute pathogen#infect()
+source $VIMRUNTIME/vimrc_example.vim
+source $VIMRUNTIME/mswin.vim
+behave mswin
+
+set diffexpr=MyDiff()
+function MyDiff()
+  let opt = '-a --binary '
+  if &diffopt =~ 'icase' | let opt = opt . '-i ' | endif
+  if &diffopt =~ 'iwhite' | let opt = opt . '-b ' | endif
+  let arg1 = v:fname_in
+  if arg1 =~ ' ' | let arg1 = '"' . arg1 . '"' | endif
+  let arg2 = v:fname_new
+  if arg2 =~ ' ' | let arg2 = '"' . arg2 . '"' | endif
+  let arg3 = v:fname_out
+  if arg3 =~ ' ' | let arg3 = '"' . arg3 . '"' | endif
+  if $VIMRUNTIME =~ ' '
+    if &sh =~ '\<cmd'
+      if empty(&shellxquote)
+        let l:shxq_sav = ''
+        set shellxquote&
+      endif
+      let cmd = '"' . $VIMRUNTIME . '\diff"'
+    else
+      let cmd = substitute($VIMRUNTIME, ' ', '" ', '') . '\diff"'
+    endif
+  else
+    let cmd = $VIMRUNTIME . '\diff'
+  endif
+  silent execute '!' . cmd . ' ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3
+  if exists('l:shxq_sav')
+    let &shellxquote=l:shxq_sav
+  endif
+endfunction
+
+" 配置多语言环境,解决中文乱码问题
+if has("multi_byte") 
+    " UTF-8 编码 
+    set encoding=utf-8 
+    set termencoding=utf-8 
+    set formatoptions+=mM 
+    set fencs=utf-8,gbk 
+    if v:lang =~? '^/(zh/)/|/(ja/)/|/(ko/)' 
+        set ambiwidth=double 
+    endif 
+    if has("win32") 
+        source $VIMRUNTIME/delmenu.vim 
+        source $VIMRUNTIME/menu.vim 
+        language messages zh_CN.utf-8 
+    endif 
+else 
+    echoerr "Sorry, this version of (g)vim was not compiled with +multi_byte" 
+endif
+
+" 常用配置
+set nu!
+colorscheme desert 
+syntax enable 
+syntax on
+set noundofile
+set nobackup
+set noswapfile
+set ts=4
+set laststatus=2
+set tags=E:\huangyq\xwolves48\Program\client\src\tags;
+let g:cocos2dx_diction_location = 'C:\Program Files (x86)\Vim\vimfiles\bundle\vim-quick-cocos2d-x\key-dict'
+
+"使用lua执行当前文件
+map <F6> <Esc>:!lua5.1 %<CR><Esc>
+
+" F3 NERDTree 切换  
+map <F3> :NERDTreeToggle<CR>  
+imap <F3> <ESC>:NERDTreeToggle<CR>  
+let g:NERDTreeWinPos="left"  
+let g:NERDTreeWinSize=25  
+let g:NERDTreeShowLineNumbers=1  
+let g:neocomplcache_enable_at_startup = 1  
+let NERDSpaceDelims=1 " 让注释符与语句之间留一个空格  
+let NERDCompactSexyComs=1 " 多行注释时样子更好看 
+
+"打开当前文件所在目录
+function OpenFileLocation()
+		if ( expand("%") != "" )
+				execute "!start explorer /select, %"
+		else
+				execute "!start explorer /select, %:p:h"
+		endif
+endfunction
+map <F7> <ESC>:call OpenFileLocation()<CR>
